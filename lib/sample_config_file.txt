@@ -1,0 +1,52 @@
+# This is an example comment. Any line of text beginning with a "hash" is ignored by the parser
+# Empty lines are also ignored
+[path]
+# This segment contains all of the essential paths to external programs or the working directory
+# All variables must be filled with appropriate path locations
+bin_dir=~/bin
+mrsfast_path=~/bin
+# Base reference is the hard masked reference genome
+base_ref_genome=/home/share/test.fa
+# Alt is non-masked
+alt_ref_genome=/home/share/alt_test.fa
+# bed file: chr\tstart\tend
+gap_file=/home/share/gap.bed
+java_path=/home/share/
+gatk_path=/home/share/gatk/
+
+[/path]
+
+[files]
+# This segment contains the actual sequence files to be processed by the pipeline
+# Delimiters between fields can be commas, tabs or spaces
+# Here are the necessary fields:
+# Fastq1	Fastq2	average insert size	insert size stdev	library type	animal name
+/home/share/01.fq1	/home/share/01.fq2	300	25	p	ANGUS1
+/home/share/02.fq1	/home/share/02.fq2	300	25	p	ANGUS1
+/home/share/03.fq1	/home/share/03.fq2	300	25	p	ANGUS1
+/home/share/04.fq1	/home/share/04.fq2	320	45	p	ANGUS2
+/home/share/05.fq1	/home/share/05.fq2	1000	250	m	ANGUS3
+[/files]
+
+[output]
+# This segment just contains the output file directories and some output toggle options
+command_dir=/home/share/commands
+base_output_dir=/home/share/this_run
+fastq_output_dir=/home/share/temp_fqs
+process_restart_log=/home/share/process.log
+fastq_line_limit=50000
+[/output]
+
+[flags]
+# This segment gives process control over the pipeline
+# If the pipeline terminated prematurely, you can skip over certain segments and restart where you left off
+is_threaded_not_lsf=1
+gatk_call_snps_indels=1
+split_fastq=1
+align_mrsfast_splitread=1
+call_mrsfast_cnvs=1
+merge_cnvs=1
+clean_mrsfast_bam=0
+clean_bwa_bam=0
+
+[/flags]

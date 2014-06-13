@@ -66,6 +66,20 @@ Class::Struct::struct (bwa_bams => {
 #########################################
 
 unless((defined($opts{'c'}) ) && !defined($opts{'h'})){
+	my $thisdir = dirname(__FILE__);
+	my $missing = 0;
+	my @reqs = ("$thisdir/mrsfast", "$thisdir/samtools", "$thisdir/bwa", "$thisdir/PairMatchMrsfastSam.jar", "$thisdir/CleanSam.jar", "$thisdir/ReorderSam.jar", 
+		"$thisdir/MarkDuplicates.jar", "$thisdir/lib/BedUtils.jar", "$thisdir/lib/sam-1.83.jar");
+	foreach my $r (@reqs){
+		if(! -e $r){
+			print STDERR "WARNING! Could not find file: $r in the folder with run_cnv_caller_pipeline.pl!\n";
+			$missing = 1;
+		}
+	}
+	if($missing){
+		print STDERR "Error! Please fix missing prerequisites listed above before running the program!\n";
+		exit;
+	}
 	print $usage;
 	exit;
 }

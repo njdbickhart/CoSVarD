@@ -51,11 +51,12 @@ my $splitfq1 = "$working.split.fq";
 my $mrsfastsplitsam1 = "$working.mrsfast.sam";
 my $divet = "$working.divet.vh";
 my $single = "$working.single.txt";
+my $dfinal = "$d_out/$bnames.$fqrnum.divet.vh.gz";
 
 # Read group Information
 my $sm = "$bnames.$opts{g}";
 my $plat = "ILLUMINA";
-my $rgstr = qq{\'\@RG\tID:$bnames\tPL:$plat\tSM:$sm\'};
+my $rgstr = qq{\'\@RG\tID:$sm\tPL:$plat\tLB:$sm\tSM:$bnames\'};
 
 # Ensuring that necessary directories are present
 mkdir("$opts{o}") || print $! . "\n";
@@ -72,18 +73,21 @@ system("$bindir/mrsfast --search $opts{r} --seq $opts{2} -e $opts{e} -o $mrsfast
 system("rm $mrsfastnohit");
 
 # convert MrsFAST sams to bams
-#system("$bindir/samtools view -bS -t $reffai -o $mrsfastbam1 $mrsfastsam1");
-#system("$bindir/samtools view -bS -t $reffai -o $mrsfastbam2 $mrsfastsam2");
+system("$bindir/samtools view -bS -t $reffai -o $mrsfastbam1 $mrsfastsam1");
+system("$bindir/samtools view -bS -t $reffai -o $mrsfastbam2 $mrsfastsam2");
 
 
 # Running read spliting pipeline
 my $upperb = int($opts{u});
 system("$javapath/java $jopt -jar $bindir/pairMatchMrsfastSam.jar -i1 $mrsfastsam1 -i2 $mrsfastsam2 -f1 $opts{1} -f2 $opts{2} -o $working -m $opts{m} -l $opts{l} -u $upperb");
-#system("rm $mrsfastsam1 $mrsfastsam2");
+system("rm $mrsfastsam1 $mrsfastsam2");
 
 # Running last round of MrsFAST
 system("$bindir/mrsfast --search $opts{r} --seq $splitfq1 -e $splitedit -o $mrsfastsplitsam1 -u $mrsfastnohit");
 system("rm $mrsfastnohit");
+system("rm splitfq1");
+system("gzip $divet");
+system("gzip $single");
 
 # Processing BWA bams 
 #print "BWA: $bnames $opts{1} $opts{2}\n";
@@ -104,6 +108,7 @@ system("$javapath/java $jopt -jar $bindir/MarkDuplicates.jar I=$sortbam O=$dup M
 system("rm $sortbam");
 
 # Check for necessary files; if present, delete initial fastq; otherwise the checkpoint program will know something's wrong
-if(-e $single && -e $mrsfastsam1 && -e $mrsfastsam2 && -e $divet && -e $dup){
+if(-e "$single.gz" && -e $mrsfastbam1 && -e $mrsfastbam2 && -e "$divet.gz" && -e $dup){
 	system("rm $opts{1} $opts{2}");
+	system("mv $divet.gz $dfinal");
 }

@@ -341,7 +341,7 @@ sub generate_palign_command {
 	$command .= "-q normal ";
 
 	$command .= "\'perl $bin_dir/run_alignment_programs_pe.pl -1 $f1 -2 $f2 -o $out -r $reference -e $edit_dis ";
-	$command .= "-l $l -m $m -u $u -n $i -a $alternate -c $outbase -b $bin_dir -j $java_dir -g $rgnum\'";
+	$command .= "-l $l -m $m -u $u -n $i -a $alternate -c $outbase -b $bin_dir -j $java_dir -v Xmx3G -g $rgnum\'";
 	
 	open(OUT, "> $command_dir/P_$bnames\_align.$i.sh") || print "Could not create command output! $!\n";
 	print OUT $command;
